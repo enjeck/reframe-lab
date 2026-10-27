@@ -2,7 +2,17 @@
 
 Reframe Lab converts a video to any output size and keeps the important content in frame. Portrait, square, landscape, ultrawide and custom sizes all use the same geometry code. A run renders every edit (*Smart*, *Follow* and *Centre*, plus *Smart target* and *Target* when the user marks something) along with the crop plans, metrics and a decision trace.
 
-## Pipeline
+## Problem
+
+Short-form platforms such as Shorts, Reels and TikTok use a 9:16 frame. A 9:16 crop of a 16:9 video keeps only about a third of the width, so most of every frame has to go. A centre crop often cuts off a person or the end of a label. A tracker that drives the crop directly makes the camera twitch. Padding the whole frame onto a blurred background keeps everything, but the subject becomes small.
+
+Clip tools already reframe video automatically. Users report crops that lose a face, lag behind the action, frame the listener instead of the speaker, or cut through captions. Some of these tools also charge for every minute of video.
+
+## Users
+
+The users are people who repurpose their own landscape video. This includes creators who post Shorts, educators, and small teams who post product demos or screen recordings. They need a result they can trust without editing every shot by hand. When the automatic choice is wrong, they need a quick way to fix one shot. Their videos often contain text on screen or more than one person, so the crop has to handle both.
+
+## Architecture
 
 ![Pipeline](images/pipeline-architecture.png)
 
@@ -14,7 +24,7 @@ The pipeline has three stages.
 
 Corrections and edit changes replan from the cached bundle, so they skip the perception stage.
 
-## OpenCV 5 methods
+## OpenCV 5 implementation
 
 | Stage | Method |
 |---|---|
@@ -58,6 +68,11 @@ In the example above, a framing mark put the crop on a camera instead of the per
 
 The loop runs on OpenCV measurements and fixed rules, with no language model.
 
+- Task success. A round only replaces the current plan when its score is higher, and the controller keeps the best plan it found. In the example, the score rose from 42 to 74.
+- Failure handling. If no round passes every gate, the best plan is still rendered and the remaining issues are written to the trace. A worker that fails on AWS writes `error.json`, and the API reports the ECS stop reason if the task dies first.
+- Observability. Each round's plan is saved under `plans/revisions/`, next to `auto_fix_trace.json` and `performance.json`. On AWS, each stage also logs a JSON event to CloudWatch.
+- Human control. Every edit is shown, including the ones the controller ranked lower. Framing marks override the planner for one shot, matching shots or the whole video, and the update replans from the cached evidence.
+
 ## Performance
 
 To cut repeated work, the analysis copy is sampled by FFmpeg before Python sees it. Difficult intervals get a finer second pass, and OCR and person detection run on their own cadence. Static scenes reuse their evidence until the next refresh or shot cut. The video is decoded and encoded once for all edits. Each run writes its stage timings to `performance.json`.
@@ -97,3 +112,11 @@ These metrics are proxies computed from the same OpenCV evidence. They are not h
 - Active-speaker emphasis has only been tested on a controlled clip, since the public two-person benchmark has no audio.
 - A wrong framing mark can push the crop off the subject. The review loop catches low coverage but cannot know what the user meant.
 - The cloud version skips the tracking review step, and a correction after a cloud run starts a new job.
+
+## Responsible use
+
+- Reframe Lab does not identify anyone. Face and person detection only decide where the crop goes.
+- The models run inside OpenCV, on the user's machine or in the Fargate task. No video or detection is sent to a third-party service.
+- The cloud version is a private demo. It needs an access code, limits the upload size and keeps files in a private, encrypted bucket. Uploads and results are deleted after twelve hours, links expire after one hour, and the tasks accept no inbound traffic. A public service would also need user accounts, rate limits, private subnets and upload scanning.
+- Every edit is shown and every decision is saved in the trace. A person makes the final choice and can see why each crop was chosen.
+- Users must own the videos they upload or have permission to use them. The creator clip comes from Pexels under the Pexels licence. The wildlife clips come from a wildlife compilation published under a Creative Commons licence.
