@@ -1,0 +1,160 @@
+{
+  "version": 2,
+  "settings": {
+    "analysis_proxy": true,
+    "coarse_to_fine": true,
+    "detector_cadence": true,
+    "direct_ffmpeg": true,
+    "static_scene_reuse": true,
+    "persistent_models": true,
+    "dnn_optimization": true,
+    "dnn_batch_size": 4,
+    "pipeline_queues": true
+  },
+  "features": {
+    "consistent_framing": true,
+    "active_speaker": true,
+    "framing_corrections": 0
+  },
+  "stages": {
+    "normalization_seconds": 0.3119466310000121,
+    "tracking_seconds": 8.469999670523976e-07,
+    "analysis_seconds": 12.000904820000017,
+    "planning_seconds": 0.11578793900002893,
+    "render_seconds": 33.39577671699999,
+    "comparison_seconds": 1.3800001852359856e-07,
+    "report_seconds": 0.0026416000000040185,
+    "total_seconds": 45.85332750600003
+  },
+  "analysis_cache_reused": false,
+  "analysis": {
+    "total_seconds": 9.00685354999996,
+    "analysis_proxy": true,
+    "coarse_to_fine": false,
+    "detector_cadence": true,
+    "static_scene_reuse": true,
+    "persistent_models": true,
+    "dnn_optimization": true,
+    "dnn_batch_size": 4,
+    "pipeline_queues": true,
+    "detector_runtime": {
+      "cache_hit": false,
+      "load_seconds": 2.9341405339999937,
+      "persistent": true,
+      "dnn_optimization": true,
+      "requested_batch_size": 4,
+      "person": {
+        "backend": "opencv_dnn_mediapipe_person+opencv_dnn_yunet",
+        "load_seconds": 0.4296597929999848,
+        "requested_batch_size": 4,
+        "person_batch_supported": true,
+        "person_engine": "ENGINE_AUTO",
+        "person_engine_benchmark_ms": {
+          "ENGINE_NEW": 17.778206999992108,
+          "ENGINE_AUTO": 17.04479399998604,
+          "ENGINE_CLASSIC": 26.204539500014334,
+          "ENGINE_ORT": 18.755561000006082
+        },
+        "yunet_engine": "opencv_high_level_api",
+        "person_batch_disabled": false,
+        "person_batch_failures": 0,
+        "person_frame_failures": 0,
+        "face_failures": 0,
+        "face_fallback_uses": 0,
+        "last_person_error": null,
+        "last_face_error": null,
+        "runtime_warnings": []
+      },
+      "text": {
+        "backend": "opencv_dnn_ppocr_text+opencv_classical_text",
+        "load_seconds": 2.486986126999966,
+        "requested_batch_size": 4,
+        "batch_supported": true,
+        "engine": "ENGINE_ORT",
+        "engine_benchmark_ms": {
+          "ENGINE_NEW": 118.68570149997026,
+          "ENGINE_AUTO": 122.0516234999991,
+          "ENGINE_CLASSIC": 361.99252600002296,
+          "ENGINE_ORT": 117.35342650001712
+        }
+      },
+      "cache_stats": {
+        "hits": 0,
+        "misses": 1,
+        "clears": 0,
+        "entries": 1
+      }
+    },
+    "active_speaker": {
+      "enabled": true,
+      "backend": "opencv_yunet_mouth_flow+energy_vad",
+      "seconds": 0.8341877380000255,
+      "processed_frames": 92,
+      "speaking_frames": 21,
+      "speaker_switches": 2,
+      "audio_samples": 919
+    },
+    "text_dnn_interval_seconds": 1.0,
+    "people_interval_seconds": 0.45,
+    "refined_intervals": [],
+    "refined_fraction": 0.0,
+    "difficulty_mean": 0.4781632729578279,
+    "difficulty_p90": 0.5772427697443504,
+    "passes": [
+      {
+        "kind": "single",
+        "processing_resolution": [
+          426,
+          240
+        ],
+        "reference_resolution": [
+          426,
+          240
+        ],
+        "sample_fps": 5.0,
+        "start_time": 0.0,
+        "end_time": null,
+        "active_intervals": null,
+        "analysis_proxy": true,
+        "detector_cadence": true,
+        "static_scene_reuse": true,
+        "dnn_optimization": true,
+        "dnn_batch_size": 4,
+        "pipeline_queues": true,
+        "static_metrics_mean": {
+          "pixel_delta": 0.07710817382508561,
+          "histogram_delta": 0.12487788483270493,
+          "edge_delta": 0.22170056216931222
+        },
+        "timings": {
+          "frame_stream_seconds": 1.912348029000043,
+          "text_seconds": 5.000146387999905,
+          "signals_seconds": 1.4569331249997504,
+          "people_seconds": 0.8846891510000887,
+          "dense_flow_seconds": 0.0,
+          "scoring_seconds": 0.3409916110005611,
+          "static_check_seconds": 0.12892706399975395,
+          "batch_wait_seconds": 0.0,
+          "wall_seconds": 8.170161469999982
+        },
+        "counts": {
+          "samples": 92,
+          "text_dnn_calls": 23,
+          "text_dnn_batches": 19,
+          "text_classical_calls": 69,
+          "people_calls": 34,
+          "people_batches": 23,
+          "dense_flow_calls": 0,
+          "static_reuse_frames": 0,
+          "full_analysis_frames": 92,
+          "prefetched_frames": 92,
+          "text_detector_errors": 0,
+          "people_detector_errors": 0
+        },
+        "detector_errors": [],
+        "detector_warnings": []
+      }
+    ],
+    "final_sample_count": 92
+  }
+}

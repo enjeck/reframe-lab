@@ -1,0 +1,13 @@
+.git
+.venv
+.aws-sam
+.aws-deploy.env
+.pytest_cache
+.ruff_cache
+**/__pycache__
+build
+web-runs
+runs
+demo
+docs
+tests

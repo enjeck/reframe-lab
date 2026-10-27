@@ -1,0 +1,314 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Minimal Reframe Lab deployment with a Lambda Function URL, private S3, and one ECS Fargate task per video.
+
+Parameters:
+  WorkerImageUri:
+    Type: String
+    Description: ECR image URI for the Reframe Lab OpenCV 5 worker.
+  AccessCode:
+    Type: String
+    NoEcho: true
+    MinLength: 8
+    MaxLength: 64
+    Description: Code entered in the web page before starting a job.
+  MaxUploadBytes:
+    Type: Number
+    Default: 4294967296
+    MinValue: 1048576
+    Description: Maximum uploaded video size. Default is 4 GiB.
+  RetentionHours:
+    Type: Number
+    Default: 12
+    MinValue: 1
+    MaxValue: 720
+    Description: Hours before an hourly cleanup deletes uploads and results. The sample clip is never deleted.
+  RetentionDays:
+    Type: Number
+    Default: 1
+    MinValue: 1
+    MaxValue: 30
+    Description: S3 lifecycle backstop in whole days, in case the hourly cleanup misses an object.
+
+Resources:
+  ReframeVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-vpc'
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ReframeVpc
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ReframeVpc
+
+  DefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ReframeVpc
+      CidrBlock: 10.42.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ReframeVpc
+      CidrBlock: 10.42.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      MapPublicIpOnLaunch: true
+
+  PublicSubnetARoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetBRoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+
+  WorkerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Outbound-only security group for Reframe Lab Fargate jobs
+      VpcId: !Ref ReframeVpc
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  JobBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins: ['*']
+            AllowedMethods: [POST, GET, HEAD]
+            AllowedHeaders: ['*']
+            ExposedHeaders: [ETag]
+            MaxAge: 3600
+      LifecycleConfiguration:
+        # Uploads and job results expire. The bundled sample under samples/ stays.
+        Rules:
+          - Id: DeleteOldUploads
+            Status: Enabled
+            Prefix: uploads/
+            ExpirationInDays: !Ref RetentionDays
+          - Id: DeleteOldJobs
+            Status: Enabled
+            Prefix: jobs/
+            ExpirationInDays: !Ref RetentionDays
+
+  WorkerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/reframe-lab/${AWS::StackName}/worker'
+      RetentionInDays: 14
+
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-api'
+      RetentionInDays: 14
+
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ReframeJobBucketAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:AbortMultipartUpload
+                Resource: !Sub '${JobBucket.Arn}/*'
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt JobBucket.Arn
+
+  ReframeCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+
+  WorkerTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub '${AWS::StackName}-worker'
+      RequiresCompatibilities: [FARGATE]
+      NetworkMode: awsvpc
+      Cpu: '4096'
+      Memory: '8192'
+      EphemeralStorage:
+        SizeInGiB: 80
+      RuntimePlatform:
+        CpuArchitecture: X86_64
+        OperatingSystemFamily: LINUX
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ContainerDefinitions:
+        - Name: worker
+          Image: !Ref WorkerImageUri
+          Essential: true
+          Environment:
+            - Name: HOME
+              Value: /tmp
+            - Name: REFRAME_OPENCV_DISTRIBUTION
+              Value: standard
+          Command: [doctor, --strict-opencv-5]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref WorkerLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: worker
+
+  ApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: ReframeApiAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub '${JobBucket.Arn}/*'
+              # Without ListBucket, S3 answers a missing status file with
+              # AccessDenied instead of NoSuchKey, and every poll fails.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt JobBucket.Arn
+              - Effect: Allow
+                Action: ecs:RunTask
+                Resource: !Ref WorkerTaskDefinition
+              - Effect: Allow
+                Action: ecs:DescribeTasks
+                Resource: '*'
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource:
+                  - !GetAtt TaskExecutionRole.Arn
+                  - !GetAtt TaskRole.Arn
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: ApiLogGroup
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-api'
+      CodeUri: api/
+      Handler: app.handler
+      Runtime: python3.12
+      Architectures: [x86_64]
+      MemorySize: 256
+      Timeout: 60
+      Role: !GetAtt ApiRole.Arn
+      Environment:
+        Variables:
+          JOB_BUCKET: !Ref JobBucket
+          ECS_CLUSTER: !Ref ReframeCluster
+          TASK_DEFINITION: !Ref WorkerTaskDefinition
+          SUBNET_IDS: !Join [',', [!Ref PublicSubnetA, !Ref PublicSubnetB]]
+          SECURITY_GROUP_ID: !Ref WorkerSecurityGroup
+          ACCESS_CODE: !Ref AccessCode
+          MAX_UPLOAD_BYTES: !Ref MaxUploadBytes
+          LOG_GROUP: !Ref WorkerLogGroup
+          UPLOAD_URL_SECONDS: '900'
+          RESULT_URL_SECONDS: '3600'
+          RETENTION_HOURS: !Ref RetentionHours
+      Events:
+        HourlyCleanup:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 hour)
+            Description: Delete uploads and results older than RetentionHours
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: BUFFERED
+        Cors:
+          AllowOrigins: ['*']
+          AllowMethods: [GET, POST]
+          AllowHeaders: [content-type, x-reframe-key]
+          MaxAge: 3600
+
+Outputs:
+  WebUrl:
+    Description: Open this URL to upload and process a video.
+    Value: !GetAtt ApiFunctionUrl.FunctionUrl
+  JobBucketName:
+    Value: !Ref JobBucket
+  ClusterName:
+    Value: !Ref ReframeCluster
+  TaskDefinitionArn:
+    Value: !Ref WorkerTaskDefinition
+  WorkerLogGroupName:
+    Value: !Ref WorkerLogGroup

@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+demo/
+runs/
+web-runs/
+.aws-deploy.env
+.aws-sam/
+.DS_Store
+*.log

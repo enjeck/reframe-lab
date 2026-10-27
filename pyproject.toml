@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reframe-lab"
+version = "0.14.0"
+description = "OpenCV 5 toolkit for content-aware video reframing to arbitrary output sizes"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Reframe Lab contributors"}]
+dependencies = [
+  "numpy>=2.0,<3",
+  "opencv-contrib-python-headless>=5.0.0.93,<6",
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.30,<1",
+  "python-multipart>=0.0.12,<1",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Multimedia :: Video",
+  "Topic :: Scientific/Engineering :: Image Processing",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.8", "httpx>=0.27,<1"]
+cloud = ["boto3>=1.35,<2"]
+
+[project.scripts]
+reframe-lab = "reframelab.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# Long lines are mostly embedded HTML and report strings.
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# FastAPI declares form and file parameters with calls in defaults.
+"src/reframelab/webapp.py" = ["B008"]

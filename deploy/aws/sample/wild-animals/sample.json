@@ -1,0 +1,17 @@
+{
+  "title": "Wild animals",
+  "output_size": "540x960",
+  "quality": "balanced",
+  "source_seconds": 18.4,
+  "profiles": [
+    "hybrid_safe",
+    "hybrid_temporal",
+    "center"
+  ],
+  "source": "Five shots from the clip supplied by the project author: 2:46, 1:55, 0:43, 1:05 and 2:27. Chosen because each subject sits away from the frame centre.",
+  "mean_shared_coverage": {
+    "hybrid_safe": 0.791,
+    "hybrid_temporal": 0.461,
+    "center": 0.291
+  }
+}
