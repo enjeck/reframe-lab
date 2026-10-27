@@ -14,7 +14,7 @@ It finds faces, people, text and motion in each frame, plans a calm camera path,
 ## Run it locally
 
 ```bash
-python3.12 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -c requirements/runtime-py312.lock -e '.[cloud]'
 reframe-lab models --download core
