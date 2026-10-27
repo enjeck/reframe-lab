@@ -1,5 +1,5 @@
-# Exact development versions for Python 3.12 (runtime plus test and lint tools).
-# Use: python -m pip install -c requirements/dev-py312.lock -e '.[dev,cloud]'
+# Exact development versions for Python 3.12 or newer (runtime plus test and lint tools).
+# Use: python -m pip install -c requirements/dev.lock -e '.[dev,cloud]'
 annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1

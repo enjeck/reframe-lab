@@ -8,7 +8,7 @@ To save resources, nothing runs on AWS when no one is using the site. The browse
 
 - AWS CLI v2 and AWS SAM CLI
 - Docker with buildx
-- Python 3.12
+- Python 3.10 or newer
 - AWS credentials that can create CloudFormation, IAM, VPC, ECS, ECR, Lambda, S3 and CloudWatch resources
 
 ## Deploy

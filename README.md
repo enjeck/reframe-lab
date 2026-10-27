@@ -13,10 +13,12 @@ It finds faces, people, text and motion in each frame, plans a calm camera path,
 
 ## Run it locally
 
+You need Python 3.10 or newer and FFmpeg.
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -c requirements/runtime-py312.lock -e '.[cloud]'
+pip install -e '.[cloud]'
 reframe-lab models --download core
 reframe-lab web
 ```
@@ -42,9 +44,11 @@ The setup and settings are in [`docs/AWS.md`](docs/AWS.md).
 ## Run the tests
 
 ```bash
-pip install -c requirements/dev-py312.lock -e '.[dev,cloud]'
+pip install -e '.[dev,cloud]'
 pytest
 ```
+
+The tests pass on Python 3.10 to 3.14. To install the exact package versions I tested with, add `-c requirements/dev.lock` (Python 3.12 or newer). The AWS worker image installs from `requirements/runtime.lock`.
 
 ## How it works
 

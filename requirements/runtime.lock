@@ -1,6 +1,6 @@
-# Exact runtime versions for Python 3.12 (web app, CLI and AWS worker).
-# Verified on 2026-10-25: 116 tests passed on Python 3.12 with requirements/dev-py312.lock.
-# Use as a constraints file: python -m pip install -c requirements/runtime-py312.lock -e '.[cloud]'
+# Exact runtime versions for Python 3.12 or newer (web app, CLI and AWS worker).
+# Python 3.10 and 3.11 need an older numpy, so install without this file there.
+# Use as a constraints file: python -m pip install -c requirements/runtime.lock -e '.[cloud]'
 annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1

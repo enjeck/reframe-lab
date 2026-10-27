@@ -12,7 +12,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY dist/reframe_lab-0.14.0-py3-none-any.whl /tmp/wheels/
-COPY requirements/runtime-py312.lock /tmp/constraints.txt
+COPY requirements/runtime.lock /tmp/constraints.txt
 RUN python -m pip install --upgrade pip setuptools wheel \
     && python -m pip install -c /tmp/constraints.txt \
         "opencv-contrib-python-headless==5.0.0.93" \
