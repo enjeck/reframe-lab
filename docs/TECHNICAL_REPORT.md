@@ -103,6 +103,8 @@ The benchmark clips are a Chromium timeline screencast with dense text, the Kris
 
 The minimum-jerk camera kept the same target coverage as the direct follower. On the screen recording, static-scene reuse skipped full analysis on 155 of 193 samples with identical quality metrics. On the moving car it reused none, since every frame had real motion.
 
+The result videos, plans and metrics for every test are in [`evaluation/`](../evaluation/).
+
 These metrics are proxies computed from the same OpenCV evidence. They are not human ground truth, which is one reason every edit is shown to the user.
 
 ## Limitations

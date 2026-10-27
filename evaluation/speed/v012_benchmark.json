@@ -1,0 +1,362 @@
+{
+  "version": 1,
+  "notes": [
+    "Core model binaries were unavailable in the benchmark environment. Persistent model cache behavior was measured with classical fallbacks; DNN batching and engine selection were verified with contract tests rather than claimed as a real-model speedup."
+  ],
+  "ui": {
+    "baseline": {
+      "stages": {
+        "normalization_seconds": 0.4919433659997594,
+        "tracking_seconds": 9.350005711894482e-07,
+        "analysis_seconds": 10.59918562799976,
+        "planning_seconds": 0.0860893519993624,
+        "render_seconds": 5.927655055999821,
+        "comparison_seconds": 2.9300008463906124e-07,
+        "report_seconds": 0.0010848540005099494,
+        "total_seconds": 17.10613067899976
+      },
+      "counts": {
+        "samples": 197,
+        "text_dnn_calls": 45,
+        "text_dnn_batches": 45,
+        "text_classical_calls": 152,
+        "people_calls": 58,
+        "people_batches": 58,
+        "dense_flow_calls": 96,
+        "static_reuse_frames": 0,
+        "full_analysis_frames": 197,
+        "prefetched_frames": 0
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 89.62,
+        "mean_shared_coverage": 0.88,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 1.0
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": 0.0,
+        "analysis_seconds": 0.0,
+        "render_seconds": 0.0
+      }
+    },
+    "static": {
+      "stages": {
+        "normalization_seconds": 0.4037344970001868,
+        "tracking_seconds": 1.1430001904955134e-06,
+        "analysis_seconds": 5.726468006999312,
+        "planning_seconds": 0.0794409939999241,
+        "render_seconds": 6.193942494000112,
+        "comparison_seconds": 2.7199985197512433e-07,
+        "report_seconds": 0.001006377000521752,
+        "total_seconds": 12.404835444000128
+      },
+      "counts": {
+        "samples": 193,
+        "text_dnn_calls": 30,
+        "text_dnn_batches": 30,
+        "text_classical_calls": 8,
+        "people_calls": 33,
+        "people_batches": 33,
+        "dense_flow_calls": 8,
+        "static_reuse_frames": 155,
+        "full_analysis_frames": 38,
+        "prefetched_frames": 0
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 89.61999999999998,
+        "mean_shared_coverage": 0.8799999999999998,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 1.0
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": 27.48310137003192,
+        "analysis_seconds": 45.97256611987471,
+        "render_seconds": -4.492289707896567
+      }
+    },
+    "pipeline": {
+      "stages": {
+        "normalization_seconds": 0.4344845899995562,
+        "tracking_seconds": 4.910007191938348e-07,
+        "analysis_seconds": 8.47862951300067,
+        "planning_seconds": 0.08673795400045492,
+        "render_seconds": 5.3819074350003575,
+        "comparison_seconds": 3.8599955587415025e-07,
+        "report_seconds": 0.0011533440001585404,
+        "total_seconds": 14.383097998999801
+      },
+      "counts": {
+        "samples": 197,
+        "text_dnn_calls": 45,
+        "text_dnn_batches": 45,
+        "text_classical_calls": 152,
+        "people_calls": 58,
+        "people_batches": 58,
+        "dense_flow_calls": 96,
+        "static_reuse_frames": 0,
+        "full_analysis_frames": 197,
+        "prefetched_frames": 197
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 89.62,
+        "mean_shared_coverage": 0.88,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 1.0
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": 15.918460644889583,
+        "analysis_seconds": 20.00678344001485,
+        "render_seconds": 9.206804644394278
+      }
+    },
+    "all": {
+      "stages": {
+        "normalization_seconds": 0.4491024449998804,
+        "tracking_seconds": 5.540005076909438e-07,
+        "analysis_seconds": 4.984072293999816,
+        "planning_seconds": 0.07443363099991984,
+        "render_seconds": 6.477169013000093,
+        "comparison_seconds": 4.260000423528254e-07,
+        "report_seconds": 0.002230074000181048,
+        "total_seconds": 11.987249083999814
+      },
+      "counts": {
+        "samples": 193,
+        "text_dnn_calls": 36,
+        "text_dnn_batches": 28,
+        "text_classical_calls": 31,
+        "people_calls": 40,
+        "people_batches": 31,
+        "dense_flow_calls": 29,
+        "static_reuse_frames": 118,
+        "full_analysis_frames": 75,
+        "prefetched_frames": 193
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 89.61999999999998,
+        "mean_shared_coverage": 0.8799999999999998,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 1.0
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": 29.924251667760917,
+        "analysis_seconds": 52.97683738236036,
+        "render_seconds": -9.270343024499512
+      }
+    }
+  },
+  "car": {
+    "baseline": {
+      "stages": {
+        "normalization_seconds": 1.0731617680003183,
+        "tracking_seconds": 7.869994078646414e-07,
+        "analysis_seconds": 3.4639316190005047,
+        "planning_seconds": 0.015016418000413978,
+        "render_seconds": 11.436741645999973,
+        "comparison_seconds": 4.219991751597263e-07,
+        "report_seconds": 0.0010742740005298401,
+        "total_seconds": 15.990106913999625
+      },
+      "counts": {
+        "samples": 53,
+        "text_dnn_calls": 11,
+        "text_dnn_batches": 11,
+        "text_classical_calls": 42,
+        "people_calls": 18,
+        "people_batches": 18,
+        "dense_flow_calls": 0,
+        "static_reuse_frames": 0,
+        "full_analysis_frames": 53,
+        "prefetched_frames": 0
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 73.64146881334645,
+        "mean_shared_coverage": 0.7400000000000002,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 0.8223641851287088
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": 0.0,
+        "analysis_seconds": 0.0,
+        "render_seconds": 0.0
+      }
+    },
+    "static": {
+      "stages": {
+        "normalization_seconds": 1.0510684649998439,
+        "tracking_seconds": 1.0160001693293452e-06,
+        "analysis_seconds": 3.079827667000245,
+        "planning_seconds": 0.013641103999361803,
+        "render_seconds": 11.953581692000625,
+        "comparison_seconds": 2.569995558587834e-07,
+        "report_seconds": 0.001531896000415145,
+        "total_seconds": 16.10009697699934
+      },
+      "counts": {
+        "samples": 53,
+        "text_dnn_calls": 11,
+        "text_dnn_batches": 11,
+        "text_classical_calls": 42,
+        "people_calls": 18,
+        "people_batches": 18,
+        "dense_flow_calls": 0,
+        "static_reuse_frames": 0,
+        "full_analysis_frames": 53,
+        "prefetched_frames": 0
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 73.64146881334645,
+        "mean_shared_coverage": 0.7400000000000002,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 0.8223641851287088
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": -0.6878632118676794,
+        "analysis_seconds": 11.088670165812635,
+        "render_seconds": -4.51911971082619
+      }
+    },
+    "pipeline": {
+      "stages": {
+        "normalization_seconds": 1.0565402270003688,
+        "tracking_seconds": 8.919996616896242e-07,
+        "analysis_seconds": 2.9541128320006464,
+        "planning_seconds": 0.013739361999796529,
+        "render_seconds": 11.055204082999808,
+        "comparison_seconds": 2.4400014808634296e-07,
+        "report_seconds": 0.0009532940002827672,
+        "total_seconds": 15.080701699000201
+      },
+      "counts": {
+        "samples": 53,
+        "text_dnn_calls": 11,
+        "text_dnn_batches": 11,
+        "text_classical_calls": 42,
+        "people_calls": 18,
+        "people_batches": 18,
+        "dense_flow_calls": 0,
+        "static_reuse_frames": 0,
+        "full_analysis_frames": 53,
+        "prefetched_frames": 53
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 73.64146881334645,
+        "mean_shared_coverage": 0.7400000000000002,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 0.8223641851287088
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": 5.68729915247298,
+        "analysis_seconds": 14.717922957929614,
+        "render_seconds": 3.336068740641781
+      }
+    },
+    "all": {
+      "stages": {
+        "normalization_seconds": 1.0784722240005067,
+        "tracking_seconds": 8.830002116155811e-07,
+        "analysis_seconds": 3.26098852099949,
+        "planning_seconds": 0.013695922999431787,
+        "render_seconds": 11.200148739000724,
+        "comparison_seconds": 3.639997885329649e-07,
+        "report_seconds": 0.0010208350004177191,
+        "total_seconds": 15.554572767000536
+      },
+      "counts": {
+        "samples": 53,
+        "text_dnn_calls": 13,
+        "text_dnn_batches": 10,
+        "text_classical_calls": 40,
+        "people_calls": 20,
+        "people_batches": 13,
+        "dense_flow_calls": 0,
+        "static_reuse_frames": 0,
+        "full_analysis_frames": 53,
+        "prefetched_frames": 53
+      },
+      "quality": {
+        "proxy_quality_score_0_100": 73.64146881334645,
+        "mean_shared_coverage": 0.7400000000000002,
+        "text_visible_anywhere_fraction": 1.0,
+        "stability_score": 0.8223641851287088
+      },
+      "speedup_vs_baseline_percent": {
+        "total_seconds": 2.723772576015555,
+        "analysis_seconds": 5.858750123351819,
+        "render_seconds": 2.068709028519481
+      }
+    }
+  },
+  "persistent_cache": [
+    {
+      "run": 1,
+      "wall_seconds": 2.421984059999886,
+      "detector_runtime": {
+        "cache_hit": false,
+        "load_seconds": 0.01091072899998835,
+        "persistent": true,
+        "dnn_optimization": true,
+        "requested_batch_size": 4,
+        "person": {
+          "backend": "opencv_haar_fallback",
+          "load_seconds": 0.0,
+          "requested_batch_size": 4,
+          "person_batch_supported": false,
+          "person_engine": null,
+          "person_engine_benchmark_ms": {},
+          "yunet_engine": null
+        },
+        "text": {
+          "backend": "opencv_classical_text",
+          "load_seconds": 0.0,
+          "requested_batch_size": 4,
+          "batch_supported": false,
+          "engine": null,
+          "engine_benchmark_ms": {}
+        },
+        "cache_stats": {
+          "hits": 0,
+          "misses": 1,
+          "clears": 1,
+          "entries": 1
+        }
+      },
+      "samples": 26
+    },
+    {
+      "run": 2,
+      "wall_seconds": 2.34032038299938,
+      "detector_runtime": {
+        "cache_hit": true,
+        "load_seconds": 0.01091072899998835,
+        "persistent": true,
+        "dnn_optimization": true,
+        "requested_batch_size": 4,
+        "person": {
+          "backend": "opencv_haar_fallback",
+          "load_seconds": 0.0,
+          "requested_batch_size": 4,
+          "person_batch_supported": false,
+          "person_engine": null,
+          "person_engine_benchmark_ms": {},
+          "yunet_engine": null
+        },
+        "text": {
+          "backend": "opencv_classical_text",
+          "load_seconds": 0.0,
+          "requested_batch_size": 4,
+          "batch_supported": false,
+          "engine": null,
+          "engine_benchmark_ms": {}
+        },
+        "cache_stats": {
+          "hits": 1,
+          "misses": 1,
+          "clears": 1,
+          "entries": 1
+        }
+      },
+      "samples": 26
+    }
+  ]
+}
